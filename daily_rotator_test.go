@@ -7,25 +7,25 @@ import (
 	"time"
 )
 
-func TestFileOutput(t *testing.T) {
+func TestRotationNormalOutput(t *testing.T) {
 
 	path := "test_daily.log"
 
-	_, err := os.Lstat(path)
-	if err != nil {
+	stat, _ := os.Lstat(path)
+	if stat != nil {
 		os.Remove(path)
 	}
-
-	file, err := os.OpenFile(path, os.O_CREATE, 0644)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
 
 	rotator := NewDailyRotator(path)
 	defer rotator.Close()
 
 	rotator.WriteString("SAMPLE LOG")
+
+	file, err := os.OpenFile(path, os.O_RDONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
 
 	b := make([]byte, 10)
 	file.Read(b)
