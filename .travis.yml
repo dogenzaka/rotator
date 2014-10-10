@@ -11,7 +11,7 @@ install:
   - go get github.com/stretchr/testify/assert
 
 script:
-  - go test -v -coverprofile=coverage.txt
+  - go test -v -coverprofile=coverage.txt -covermode=count
 
 after_success:
   - codecov
