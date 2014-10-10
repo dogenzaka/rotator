@@ -12,8 +12,8 @@ func TestFileOutput(t *testing.T) {
 	path := "test_daily.log"
 
 	_, err := os.Lstat(path)
-	if err == os.ErrNotExist {
-		os.Create(path)
+	if err != nil {
+		os.Remove(path)
 	}
 
 	file, err := os.OpenFile(path, os.O_CREATE, 0644)
@@ -67,6 +67,7 @@ func TestDailyRotationOnce(t *testing.T) {
 	assert.NotNil(t, stat)
 
 	os.Remove(path)
+	os.Remove(path + "." + now.Format(dateFormat))
 }
 
 func TestDailyRotationAtOpen(t *testing.T) {
@@ -96,5 +97,37 @@ func TestDailyRotationAtOpen(t *testing.T) {
 	assert.NotNil(t, stat)
 
 	os.Remove(path)
+	os.Remove(path + "." + now.Format(dateFormat))
+}
+
+func TestDailyRotationError(t *testing.T) {
+
+	path := "test_daily.log"
+
+	stat, _ := os.Lstat(path)
+	if stat != nil {
+		os.Remove(path)
+	}
+
+	now := time.Now()
+
+	rotator := NewDailyRotator(path)
+	rotator.WriteString("FIRST LOG")
+	// Simulate rotation
+	rotator.Now = time.Unix(now.Unix()+86400, 0)
+	rotator.WriteString("SECOND LOG")
+	rotator.Close()
+
+	rotator = NewDailyRotator(path)
+	defer rotator.Close()
+	rotator.WriteString("FIRST LOG")
+	// Simulate rotation twice
+	rotator.Now = time.Unix(now.Unix()+86400, 0)
+	_, err := rotator.WriteString("SECOND LOG")
+
+	assert.Nil(t, err)
+
+	os.Remove(path)
+	os.Remove(path + "." + now.Format(dateFormat))
 
 }
