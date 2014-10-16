@@ -33,6 +33,14 @@ func main() {
 }
 ```
 
+To configure rotations, set properties of rotator instances.
+
+```
+file := rotator.NewSizeRotator("/var/log/rotated.log")
+file.MaxRotation = 999 // Maximum counts of the file rotation. Default is 999
+file.RotationSize = int64(1024*1024*10) // Size threashold which cause rotation. Default is 10MiB
+```
+
 Daily rotations
 -----
 
@@ -54,4 +62,8 @@ func main() {
   file.WriteString("THIRD STRING")
 }
 ```
+
+License
+----
+rotator is licensed under MIT
 

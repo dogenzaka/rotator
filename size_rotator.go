@@ -12,6 +12,7 @@ const (
 	defaultMaxRotation  = 999
 )
 
+// SizeRotator is file writer which rotates files by size
 type SizeRotator struct {
 	path         string     // base file path
 	totalSize    int64      // current file size
@@ -21,6 +22,8 @@ type SizeRotator struct {
 	MaxRotation  int        // maximum count of the rotation
 }
 
+// Write bytes to the file. If binaries exceeds rotation threshold,
+// it will automatically rotate the file.
 func (r *SizeRotator) Write(bytes []byte) (n int, err error) {
 
 	r.mutex.Lock()
@@ -73,14 +76,18 @@ func (r *SizeRotator) Write(bytes []byte) (n int, err error) {
 	return n, err
 }
 
+// WriteString writes strings to the file. If binaries exceeds rotation threshold,
+// it will automatically rotate the file.
 func (r *SizeRotator) WriteString(str string) (n int, err error) {
 	return r.Write([]byte(str))
 }
 
+// Close the file
 func (r *SizeRotator) Close() error {
 	return r.file.Close()
 }
 
+// NewSizeRotator creates new writer of the file
 func NewSizeRotator(path string) *SizeRotator {
 	return &SizeRotator{
 		path:         path,

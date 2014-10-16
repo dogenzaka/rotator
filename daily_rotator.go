@@ -10,6 +10,7 @@ const (
 	dateFormat string = "2006-01-02"
 )
 
+// DailyRotator is writer which rotates file by date
 type DailyRotator struct {
 	path        string
 	currentDate string
@@ -18,6 +19,8 @@ type DailyRotator struct {
 	mutex       sync.Mutex
 }
 
+// Write binaries to the file.
+// It will rotate files if date is chnaged from last writing.
 func (r *DailyRotator) Write(bytes []byte) (n int, err error) {
 
 	now := time.Now()
@@ -95,14 +98,18 @@ func (r *DailyRotator) Write(bytes []byte) (n int, err error) {
 	return r.file.Write(bytes)
 }
 
+// WriteString writes strings to the file.
+// It will rotate files if date is chnaged from last writing.
 func (r *DailyRotator) WriteString(str string) (n int, err error) {
 	return r.Write([]byte(str))
 }
 
+// Close the file
 func (r *DailyRotator) Close() error {
 	return r.file.Close()
 }
 
+// NewDailyRotator creates rotator which writes to the file
 func NewDailyRotator(path string) *DailyRotator {
 	return &DailyRotator{path: path}
 }
