@@ -1,11 +1,11 @@
 package rotator
 
+import "io"
+
 // Rotator interface
 type Rotator interface {
-	// Write binaries to the file.
-	Write(bytes []byte) (n int, err error)
+	// a Write method, a Close method
+	io.WriteCloser
 	// WriteString writes strings to the file.
 	WriteString(str string) (n int, err error)
-	// Close the file
-	Close() error
 }
